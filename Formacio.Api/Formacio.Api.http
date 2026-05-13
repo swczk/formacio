@@ -1,0 +1,6 @@
+@Formacio.Api_HostAddress = http://localhost:5128
+
+GET {{Formacio.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
