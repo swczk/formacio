@@ -1,0 +1,19 @@
+# Imagem de desenvolvimento com hot-reload via dotnet watch.
+# O código-fonte é montado como volume pelo compose — não é copiado para a imagem.
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
+WORKDIR /src
+
+COPY Formacio.sln                                       ./
+COPY Formacio.Domain/Formacio.Domain.csproj             Formacio.Domain/
+COPY Formacio.Api/Formacio.Api.csproj                   Formacio.Api/
+
+RUN dotnet restore Formacio.sln
+
+EXPOSE 8080
+
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_WATCH_SUPPRESS_MSBUILD_INCREMENTALISM=1
+
+ENTRYPOINT ["dotnet", "watch", "run", \
+            "--project", "Formacio.Api/Formacio.Api.csproj", \
+            "--no-launch-profile"]
