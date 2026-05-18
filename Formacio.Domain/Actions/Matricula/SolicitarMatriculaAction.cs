@@ -3,32 +3,59 @@ using Formacio.Domain.Bodies;
 
 namespace Formacio.Domain.Actions.Matricula;
 
-public record SolicitarMatriculaRequest(FichaMatricula Ficha, string NomeInteressado);
+public record SolicitarMatriculaRequest(string InteressadoId);
+public record SolicitarMatriculaResponse(string MatriculaId, string NomeAluno, string Curso);
 
-public class SolicitarMatriculaAction
-    : NomisAction<Interessado, SolicitarMatriculaRequest, FichaMatricula>
+public class SolicitarMatriculaAction(IMatriculaRepository repo)
+    : NomisAction<Interessado, SolicitarMatriculaRequest, SolicitarMatriculaResponse>
 {
-    public override Task<ActionResult> CanExecuteAsync(
+    public override async Task<ActionResult> CanExecuteAsync(
         Interessado ator,
         SolicitarMatriculaRequest req,
         CancellationToken ct = default)
     {
-        if (req.Ficha.Estado != FichaMatriculaState.EmBranco)
-            return Task.FromResult(ActionResult.Falha("Já existe uma ficha em curso para este interessado."));
+        var ficha = await repo.BuscarFichaAsync(ator.Id, ct);
 
-        if (string.IsNullOrWhiteSpace(ator.CursoDesejado))
-            return Task.FromResult(ActionResult.Falha("Interessado deve indicar um curso antes de solicitar matrícula."));
+        if (ficha is null)
+            return ActionResult.Falha(
+                "Interessado não possui ficha de matrícula. A secretária deve preencher a ficha primeiro (acção 4).");
 
-        return Task.FromResult(ActionResult.Sucesso());
+        if (ficha.Estado != FichaMatriculaState.Preenchida)
+            return ActionResult.Falha(
+                $"A ficha de matrícula está em estado '{ficha.Estado}'. Deve estar Preenchida.");
+
+        var contrato = await repo.BuscarContratoAsync(ator.Id, ct);
+
+        if (contrato is null)
+            return ActionResult.Falha(
+                "Interessado não possui contrato. O contrato deve ser assinado por ambas as partes (acções 5a e 5b).");
+
+        if (contrato.Estado != ContratoState.AssinadoPorAmbos)
+            return ActionResult.Falha(
+                $"O contrato está em estado '{contrato.Estado}'. Deve estar AssinadoPorAmbos.");
+
+        if (await repo.ExisteMatriculaAtivaAsync(ator.Id, ct))
+            return ActionResult.Falha("Interessado já possui matrícula activa.");
+
+        return ActionResult.Sucesso();
     }
 
-    protected override Task<FichaMatricula> ExecutarAsync(
+    protected override async Task<SolicitarMatriculaResponse> ExecutarAsync(
         Interessado ator,
         SolicitarMatriculaRequest req,
         CancellationToken ct)
     {
-        req.Ficha.NomeAluno = ator.Nome;
-        req.Ficha.Curso = ator.CursoDesejado;
-        return Task.FromResult(req.Ficha);
+        var ficha = await repo.BuscarFichaAsync(ator.Id, ct);
+
+        var solicitacao = new SolicitacaoMatricula
+        {
+            InteressadoId = ator.Id,
+            NomeInteressado = ficha!.NomeAluno,
+            CursoDesejado = ficha.Curso,
+            Estado = SolicitacaoState.Activa,
+        };
+
+        var gravada = await repo.GravarSolicitacaoAsync(solicitacao, ct);
+        return new SolicitarMatriculaResponse(gravada.Id, gravada.NomeInteressado, gravada.CursoDesejado);
     }
 }
