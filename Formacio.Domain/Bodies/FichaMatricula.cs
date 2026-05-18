@@ -3,6 +3,7 @@ namespace Formacio.Domain.Bodies;
 public class FichaMatricula
 {
    public string Id { get; init; } = Guid.NewGuid().ToString();
+   public string InteressadoId { get; set; } = "";
    public FichaMatriculaState Estado { get; set; } = FichaMatriculaState.EmBranco;
 
    // Informações registradas durante a ação 4

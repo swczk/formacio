@@ -3,6 +3,7 @@ namespace Formacio.Domain.Bodies;
 public class Contrato
 {
    public string Id { get; init; } = Guid.NewGuid().ToString();
+   public string InteressadoId { get; set; } = "";
    public ContratoState Estado { get; set; } = ContratoState.EmBranco;
 
    public string NomeAluno { get; set; } = "";

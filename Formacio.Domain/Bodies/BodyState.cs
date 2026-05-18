@@ -7,3 +7,4 @@ public enum PlanilhaFinanceiraState { EmUso }
 public enum PlanilhaPresencaState { EmBranco, Preenchida, Arquivada }
 public enum CertificadoState { EmBranco, Emitido, AssinadoPeloInstrutor, AssinadoPorAmbos, Entregue }
 public enum ReciboState { EmBranco, Assinado }
+public enum SolicitacaoState { Pendente, Activa, Concluida, Cancelada }
