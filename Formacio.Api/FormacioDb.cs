@@ -5,7 +5,9 @@ namespace Formacio.Api;
 
 public class FormacioDb(DbContextOptions<FormacioDb> opts) : DbContext(opts)
 {
-    public DbSet<SolicitacaoMatricula> Solicitacoes => Set<SolicitacaoMatricula>();
+    public DbSet<SolicitacaoMatricula> Solicitacoes    => Set<SolicitacaoMatricula>();
+    public DbSet<FichaMatricula>       FichasMatricula => Set<FichaMatricula>();
+    public DbSet<Contrato>             Contratos       => Set<Contrato>();
 
     protected override void OnModelCreating(ModelBuilder m)
     {
@@ -14,14 +16,19 @@ public class FormacioDb(DbContextOptions<FormacioDb> opts) : DbContext(opts)
             e.HasKey(x => x.Id);
             e.Property(x => x.Estado).HasConversion<string>();
         });
-    }
-}
 
-public class SolicitacaoMatricula
-{
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-    public string NomeInteressado { get; set; } = "";
-    public string CursoDesejado { get; set; } = "";
-    public FichaMatriculaState Estado { get; set; } = FichaMatriculaState.EmBranco;
-    public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
+        m.Entity<FichaMatricula>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Estado).HasConversion<string>();
+            e.HasIndex(x => x.InteressadoId);
+        });
+
+        m.Entity<Contrato>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Estado).HasConversion<string>();
+            e.HasIndex(x => x.InteressadoId);
+        });
+    }
 }
