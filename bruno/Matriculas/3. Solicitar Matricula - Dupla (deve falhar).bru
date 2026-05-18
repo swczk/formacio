@@ -1,0 +1,24 @@
+meta {
+  name: 3. Solicitar Matricula - Dupla (deve falhar)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/matriculas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "interessado-ana-001",
+    "nomeInteressado": "Ana Silva",
+    "cursoDesejado": "Informática Básica",
+    "contato": "ana@email.com"
+  }
+}
+
+docs {
+  Deve retornar 422 com erro "Interessado já possui matrícula activa."
+}

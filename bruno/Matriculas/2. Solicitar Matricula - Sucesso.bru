@@ -1,0 +1,26 @@
+meta {
+  name: 2. Solicitar Matricula - Sucesso
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/matriculas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "interessado-ana-001",
+    "nomeInteressado": "Ana Silva",
+    "cursoDesejado": "Informática Básica",
+    "contato": "ana@email.com"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("matriculaId", res.body.matriculaId);
+  }
+}

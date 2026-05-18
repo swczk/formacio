@@ -1,0 +1,26 @@
+meta {
+  name: 5. Solicitar Matricula - Ficha sem Contrato (deve falhar)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/matriculas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "interessado-sem-contrato-888",
+    "nomeInteressado": "Maria Pereira",
+    "cursoDesejado": "Word",
+    "contato": ""
+  }
+}
+
+docs {
+  Para este teste, inserir manualmente via psql uma FichaMatricula Preenchida
+  mas sem Contrato correspondente, e usar o mesmo InteressadoId.
+  Deve retornar 422 com erro "Interessado não possui contrato."
+}

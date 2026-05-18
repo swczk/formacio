@@ -1,0 +1,28 @@
+meta {
+  name: 1. Seed Interessado (Dev)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/dev/seed
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "interessado-ana-001",
+    "nomeInteressado": "Ana Silva",
+    "cursoDesejado": "Informática Básica",
+    "contato": "ana@email.com",
+    "modalidade": "Turma",
+    "valorMensalidade": 150.00
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("interessadoId", res.body.interessadoId);
+  }
+}

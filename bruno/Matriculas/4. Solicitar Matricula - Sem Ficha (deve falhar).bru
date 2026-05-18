@@ -1,0 +1,24 @@
+meta {
+  name: 4. Solicitar Matricula - Sem Ficha (deve falhar)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/matriculas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "interessado-sem-ficha-999",
+    "nomeInteressado": "Carlos Nunes",
+    "cursoDesejado": "Excel",
+    "contato": ""
+  }
+}
+
+docs {
+  Deve retornar 422 com erro "Interessado não possui ficha de matrícula."
+}
