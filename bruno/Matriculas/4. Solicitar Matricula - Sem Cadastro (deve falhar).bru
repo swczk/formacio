@@ -1,0 +1,22 @@
+meta {
+  name: 4. Solicitar Matricula - Sem Cadastro (deve falhar)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/matriculas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "id-inexistente-000"
+  }
+}
+
+docs {
+  Tenta solicitar matrícula para um ID que nunca foi cadastrado.
+  Deve retornar 404 com erro "Interessado '...' não está cadastrado."
+}

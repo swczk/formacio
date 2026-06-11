@@ -12,10 +12,7 @@ post {
 
 body:json {
   {
-    "interessadoId": "interessado-ana-001",
-    "nomeInteressado": "Ana Silva",
-    "cursoDesejado": "Informática Básica",
-    "contato": "ana@email.com"
+    "interessadoId": "interessado-ana-001"
   }
 }
 
@@ -23,4 +20,10 @@ script:post-response {
   if (res.status === 201) {
     bru.setVar("matriculaId", res.body.matriculaId);
   }
+}
+
+docs {
+  Solicita matrícula para o interessado criado pelo seed (teste 1).
+  Deve retornar 201 com matriculaId, nomeAluno e curso.
+  Requer que o teste 1 (Seed) tenha sido executado primeiro.
 }

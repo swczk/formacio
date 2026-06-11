@@ -1,0 +1,31 @@
+meta {
+  name: 1. Cadastrar Interessado - Sucesso
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/interessados
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nome": "Rui Ferreira",
+    "contato": "rui.ferreira@email.com",
+    "cursoDesejado": "Excel Avançado"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("novoInteressadoId", res.body.interessadoId);
+  }
+}
+
+docs {
+  Cadastra um novo interessado.
+  Deve retornar 201 com interessadoId, nome e cursoDesejado.
+  Captura o interessadoId para uso nos testes seguintes.
+}

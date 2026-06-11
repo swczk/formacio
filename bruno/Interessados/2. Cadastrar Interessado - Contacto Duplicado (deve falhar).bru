@@ -1,0 +1,25 @@
+meta {
+  name: 2. Cadastrar Interessado - Contacto Duplicado (deve falhar)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/interessados
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nome": "Rui Ferreira Duplicado",
+    "contato": "rui.ferreira@email.com",
+    "cursoDesejado": "Word"
+  }
+}
+
+docs {
+  Tenta cadastrar um segundo interessado com o mesmo contacto.
+  Deve retornar 422 com erro "Já existe um interessado registado com o contacto '...'."
+  Requer que o teste 1 tenha sido executado primeiro.
+}

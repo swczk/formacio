@@ -1,0 +1,15 @@
+meta {
+  name: 4. Listar Interessados
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/interessados
+  auth: none
+}
+
+docs {
+  Lista todos os interessados com Valido = true.
+  Deve retornar 200 com array de interessados.
+}

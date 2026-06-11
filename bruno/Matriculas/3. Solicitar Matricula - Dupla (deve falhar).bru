@@ -12,13 +12,11 @@ post {
 
 body:json {
   {
-    "interessadoId": "interessado-ana-001",
-    "nomeInteressado": "Ana Silva",
-    "cursoDesejado": "Informática Básica",
-    "contato": "ana@email.com"
+    "interessadoId": "interessado-ana-001"
   }
 }
 
 docs {
+  Tenta criar uma segunda matrícula para o mesmo interessado.
   Deve retornar 422 com erro "Interessado já possui matrícula activa."
 }

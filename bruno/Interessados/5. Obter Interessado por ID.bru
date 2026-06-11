@@ -1,0 +1,16 @@
+meta {
+  name: 5. Obter Interessado por ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/interessados/{{novoInteressadoId}}
+  auth: none
+}
+
+docs {
+  Obtém o interessado cadastrado no teste 1 pelo seu ID.
+  Deve retornar 200 com os dados do interessado.
+  Requer que o teste 1 tenha sido executado primeiro (captura novoInteressadoId).
+}

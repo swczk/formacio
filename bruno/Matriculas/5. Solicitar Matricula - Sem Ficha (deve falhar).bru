@@ -1,0 +1,24 @@
+meta {
+  name: 5. Solicitar Matricula - Sem Ficha (deve falhar)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/matriculas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "interessadoId": "{{novoInteressadoId}}"
+  }
+}
+
+docs {
+  Tenta solicitar matrícula para um interessado cadastrado (Rui Ferreira, do teste Interessados/1)
+  mas que não possui ficha de matrícula nem contrato.
+  Deve retornar 422 com erro "Interessado não possui ficha de matrícula."
+  Requer que o teste Interessados/1 tenha sido executado primeiro (captura novoInteressadoId).
+}
