@@ -1,4 +1,5 @@
-using Formacio.Domain.Actions.Matricula;
+using Formacio.Domain.Actions.Matriculas;
+using Formacio.Domain.Actors;
 using Formacio.Domain.Bodies;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,9 @@ namespace Formacio.Api.Repositories;
 
 public class MatriculaRepository(FormacioDb db) : IMatriculaRepository
 {
+    public Task<Interessado?> BuscarInteressadoAsync(string interessadoId, CancellationToken ct) =>
+        db.Interessados.FirstOrDefaultAsync(i => i.Id == interessadoId && i.Valido, ct);
+
     public Task<FichaMatricula?> BuscarFichaAsync(string interessadoId, CancellationToken ct) =>
         db.FichasMatricula.FirstOrDefaultAsync(f => f.InteressadoId == interessadoId, ct);
 
@@ -13,14 +17,14 @@ public class MatriculaRepository(FormacioDb db) : IMatriculaRepository
         db.Contratos.FirstOrDefaultAsync(c => c.InteressadoId == interessadoId, ct);
 
     public Task<bool> ExisteMatriculaAtivaAsync(string interessadoId, CancellationToken ct) =>
-        db.Solicitacoes.AnyAsync(
-            s => s.InteressadoId == interessadoId && s.Estado == SolicitacaoState.Activa, ct);
+        db.Matriculas.AnyAsync(
+            s => s.InteressadoId == interessadoId && s.Estado == MatriculaState.Activa, ct);
 
-    public async Task<SolicitacaoMatricula> GravarSolicitacaoAsync(
-        SolicitacaoMatricula solicitacao, CancellationToken ct)
+    public async Task<Matricula> GravarMatriculaAsync(
+        Matricula matricula, CancellationToken ct)
     {
-        db.Solicitacoes.Add(solicitacao);
+        db.Matriculas.Add(matricula);
         await db.SaveChangesAsync(ct);
-        return solicitacao;
+        return matricula;
     }
 }

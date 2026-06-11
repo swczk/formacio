@@ -1,7 +1,8 @@
 using Formacio.Api;
 using Formacio.Api.Repositories;
 using Formacio.Domain.Actions;
-using Formacio.Domain.Actions.Matricula;
+using Formacio.Domain.Actions.Cadastro;
+using Formacio.Domain.Actions.Matriculas;
 using Formacio.Domain.Actors;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +15,10 @@ var connStr = builder.Configuration.GetConnectionString("Default")
     ?? "Host=localhost;Database=formacio;Username=formacio;Password=formacio";
 builder.Services.AddDbContext<FormacioDb>(opt => opt.UseNpgsql(connStr));
 
+builder.Services.AddScoped<ICadastroRepository, CadastroRepository>();
 builder.Services.AddScoped<IMatriculaRepository, MatriculaRepository>();
-builder.Services.AddScoped<SolicitarMatriculaAction>();
+builder.Services.AddScoped<CadastrarInteressadoAction>();
+builder.Services.AddScoped<MatriculaAction>();
 
 var app = builder.Build();
 
@@ -26,20 +29,48 @@ if (app.Environment.IsDevelopment())
     await db.Database.EnsureCreatedAsync();
 }
 
-app.MapPost("/matriculas", async (
-    SolicitarMatriculaDto dto,
-    SolicitarMatriculaAction action,
+// ── Interessados ─────────────────────────────────────────────────────────────
+
+app.MapPost("/interessados", async (
+    CadastrarInteressadoDto dto,
+    CadastrarInteressadoAction action,
     CancellationToken ct) =>
 {
-    var interessado = new Interessado
-    {
-        Id = dto.InteressadoId,
-        Nome = dto.NomeInteressado,
-        CursoDesejado = dto.CursoDesejado,
-        Contato = dto.Contato,
-    };
+    var secretaria = new Secretaria { Nome = "Sistema" };
+    var req = new CadastrarInteressadoRequest(dto.Nome, dto.Contato, dto.CursoDesejado);
 
-    var req = new SolicitarMatriculaRequest(dto.InteressadoId);
+    try
+    {
+        var resultado = await action.ExecuteAsync(secretaria, req, ct);
+        return Results.Created($"/interessados/{resultado.InteressadoId}", resultado);
+    }
+    catch (PreCondicaoNaoSatisfeitaException ex)
+    {
+        return Results.UnprocessableEntity(new { erro = ex.Message });
+    }
+});
+
+app.MapGet("/interessados", async (FormacioDb db, CancellationToken ct) =>
+    await db.Interessados.Where(i => i.Valido).ToListAsync(ct));
+
+app.MapGet("/interessados/{id}", async (string id, FormacioDb db, CancellationToken ct) =>
+    await db.Interessados.FindAsync([id], ct) is { } i
+        ? Results.Ok(i)
+        : Results.NotFound());
+
+// ── Matrículas ───────────────────────────────────────────────────────────────
+
+app.MapPost("/matriculas", async (
+    SolicitarMatriculaDto dto,
+    MatriculaAction action,
+    IMatriculaRepository repo,
+    CancellationToken ct) =>
+{
+    var interessado = await repo.BuscarInteressadoAsync(dto.InteressadoId, ct);
+    if (interessado is null)
+        return Results.NotFound(new { erro = $"Interessado '{dto.InteressadoId}' não está cadastrado. Registe-o primeiro em POST /interessados." });
+
+    var req = new MatriculaRequest(dto.InteressadoId);
 
     try
     {
@@ -53,61 +84,17 @@ app.MapPost("/matriculas", async (
 });
 
 app.MapGet("/matriculas", async (FormacioDb db, CancellationToken ct) =>
-    await db.Solicitacoes.ToListAsync(ct));
+    await db.Matriculas.ToListAsync(ct));
 
 app.MapGet("/matriculas/{id}", async (string id, FormacioDb db, CancellationToken ct) =>
-    await db.Solicitacoes.FindAsync([id], ct) is { } s
+    await db.Matriculas.FindAsync([id], ct) is { } s
         ? Results.Ok(s)
         : Results.NotFound());
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapPost("/dev/seed", async (SeedInteressadoDto dto, FormacioDb db, CancellationToken ct) =>
-    {
-        var fichaExistente = await db.FichasMatricula
-            .FirstOrDefaultAsync(f => f.InteressadoId == dto.InteressadoId, ct);
-
-        if (fichaExistente is not null)
-            return Results.Conflict(new { erro = "Interessado já possui ficha e contrato na base de dados." });
-
-        var ficha = new Formacio.Domain.Bodies.FichaMatricula
-        {
-            InteressadoId = dto.InteressadoId,
-            NomeAluno = dto.NomeInteressado,
-            Contato = dto.Contato,
-            Curso = dto.CursoDesejado,
-            Modalidade = dto.Modalidade,
-            Estado = Formacio.Domain.Bodies.FichaMatriculaState.Preenchida,
-            DataPreenchimento = DateTime.UtcNow,
-        };
-
-        var contrato = new Formacio.Domain.Bodies.Contrato
-        {
-            InteressadoId = dto.InteressadoId,
-            NomeAluno = dto.NomeInteressado,
-            Curso = dto.CursoDesejado,
-            ValorMensalidade = dto.ValorMensalidade,
-            TermosDoContrato = "Contrato de seed para testes.",
-            Estado = Formacio.Domain.Bodies.ContratoState.AssinadoPorAmbos,
-            DataAssinaturaInteressado = DateTime.UtcNow,
-            DataAssinaturaSecretaria = DateTime.UtcNow,
-        };
-
-        db.FichasMatricula.Add(ficha);
-        db.Contratos.Add(contrato);
-        await db.SaveChangesAsync(ct);
-
-        return Results.Ok(new { ficha.InteressadoId, fichaId = ficha.Id, contratoId = contrato.Id });
-    });
-}
-
 app.Run();
 
-public record SolicitarMatriculaDto(
-    string InteressadoId,
-    string NomeInteressado,
-    string CursoDesejado,
-    string Contato = "");
+public record CadastrarInteressadoDto(string Nome, string Contato, string CursoDesejado);
+public record SolicitarMatriculaDto(string InteressadoId);
 
 public record SeedInteressadoDto(
     string InteressadoId,
