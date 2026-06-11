@@ -8,4 +8,5 @@ public class Interessado : IActor
    public string Nome { get; init; } = "";
    public string Contato { get; init; } = "";   // telefone ou e-mail
    public string CursoDesejado { get; init; } = "";
+   public bool Valido { get; set; } = true;
 }

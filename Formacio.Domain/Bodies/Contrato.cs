@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Formacio.Domain.Bodies;
 
 public class Contrato
@@ -12,4 +14,5 @@ public class Contrato
    public string TermosDoContrato { get; set; } = "";
    public DateTime DataAssinaturaInteressado { get; set; }
    public DateTime DataAssinaturaSecretaria { get; set; }
+   public bool Valido => Estado == ContratoState.AssinadoPorAmbos;
 }

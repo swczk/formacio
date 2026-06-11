@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Formacio.Domain.Bodies;
 
 public class FichaMatricula
@@ -12,4 +14,5 @@ public class FichaMatricula
    public string Curso { get; set; } = "";
    public string Modalidade { get; set; } = ""; // "Turma" ou "Particular"
    public DateTime DataPreenchimento { get; set; }
+   public bool Valido => Estado == FichaMatriculaState.Preenchida;
 }
