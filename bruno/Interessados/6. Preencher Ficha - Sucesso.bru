@@ -1,0 +1,32 @@
+meta {
+  name: 6. Preencher Ficha - Sucesso
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/interessados/{{novoInteressadoId}}/ficha
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nomeAluno": "Rui Ferreira",
+    "contato": "rui.ferreira@email.com",
+    "curso": "Excel Avançado",
+    "modalidade": "Turma"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("fichaId", res.body.fichaId);
+  }
+}
+
+docs {
+  Preenche a ficha de matrícula para o interessado cadastrado no teste 1.
+  Deve retornar 201 com fichaId, nomeAluno e curso.
+  Requer que o teste 1 tenha sido executado (captura novoInteressadoId).
+}

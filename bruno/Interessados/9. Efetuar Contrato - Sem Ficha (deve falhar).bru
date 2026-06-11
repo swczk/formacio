@@ -1,0 +1,24 @@
+meta {
+  name: 9. Efetuar Contrato - Sem Ficha (deve falhar)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/interessados/id-sem-ficha-000/contrato
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "valorMensalidade": 150.00,
+    "termosDoContrato": ""
+  }
+}
+
+docs {
+  Tenta efetuar contrato para um ID sem ficha de matrícula preenchida.
+  Deve retornar 404 (interessado não cadastrado) ou 422 (sem ficha).
+  Para testar o caso 422: usar o novoInteressadoId e apagar a ficha manualmente da base.
+}

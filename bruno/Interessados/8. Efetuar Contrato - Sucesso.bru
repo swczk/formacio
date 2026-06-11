@@ -1,0 +1,30 @@
+meta {
+  name: 8. Efetuar Contrato - Sucesso
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/interessados/{{novoInteressadoId}}/contrato
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "valorMensalidade": 150.00,
+    "termosDoContrato": "Prestação de serviços de formação em Excel Avançado."
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("contratoId", res.body.contratoId);
+  }
+}
+
+docs {
+  Efetua o contrato de prestação de serviços para o interessado com ficha preenchida.
+  Deve retornar 201 com contratoId, nomeAluno, curso e valorMensalidade.
+  Requer que o teste 6 tenha sido executado primeiro (ficha válida).
+}

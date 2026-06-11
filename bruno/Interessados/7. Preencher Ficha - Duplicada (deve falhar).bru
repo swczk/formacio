@@ -1,0 +1,26 @@
+meta {
+  name: 7. Preencher Ficha - Duplicada (deve falhar)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/interessados/{{novoInteressadoId}}/ficha
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nomeAluno": "Rui Ferreira",
+    "contato": "rui.ferreira@email.com",
+    "curso": "Excel Avançado",
+    "modalidade": "Turma"
+  }
+}
+
+docs {
+  Tenta preencher uma segunda ficha para o mesmo interessado.
+  Deve retornar 422 com erro "Interessado já possui ficha de matrícula preenchida."
+  Requer que o teste 6 tenha sido executado primeiro.
+}
