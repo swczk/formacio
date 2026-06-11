@@ -1,5 +1,5 @@
 meta {
-  name: 3. Solicitar Matricula - Dupla (deve falhar)
+  name: 3. Matricula - Dupla (deve falhar)
   type: http
   seq: 3
 }
@@ -12,11 +12,12 @@ post {
 
 body:json {
   {
-    "interessadoId": "interessado-ana-001"
+    "interessadoId": "{{novoInteressadoId}}"
   }
 }
 
 docs {
   Tenta criar uma segunda matrícula para o mesmo interessado.
   Deve retornar 422 com erro "Interessado já possui matrícula activa."
+  Requer que o teste 2 tenha sido executado primeiro.
 }

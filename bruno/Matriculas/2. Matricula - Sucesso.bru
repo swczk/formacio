@@ -1,5 +1,5 @@
 meta {
-  name: 2. Solicitar Matricula - Sucesso
+  name: 2. Matricula - Sucesso
   type: http
   seq: 2
 }
@@ -12,7 +12,7 @@ post {
 
 body:json {
   {
-    "interessadoId": "interessado-ana-001"
+    "interessadoId": "{{novoInteressadoId}}"
   }
 }
 
@@ -23,7 +23,7 @@ script:post-response {
 }
 
 docs {
-  Solicita matrícula para o interessado criado pelo seed (teste 1).
+  Solicita matrícula para o interessado com ficha e contrato válidos.
   Deve retornar 201 com matriculaId, nomeAluno e curso.
-  Requer que o teste 1 (Seed) tenha sido executado primeiro.
+  Requer execução prévia de: Interessados/1, Interessados/6 e Interessados/8.
 }
